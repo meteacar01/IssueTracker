@@ -151,5 +151,12 @@ namespace IssueTracker.Controllers
         {
             return _context.User.Any(e => e.Id == id);
         }
+
+        [HttpPost]
+        public JsonResult GetAllUser()
+        {
+            var result = _context.User.ToList();
+            return Json(result);
+        }
     }
 }

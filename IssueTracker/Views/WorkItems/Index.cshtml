@@ -396,6 +396,14 @@
             }
             $("#workItemType").append(htmlWorkItemTypes);
         }, "POST");
+
+        funcAjaxRequest("", "/Users/GetAllUser", function (f) {
+            var htmlAssignedTo = "";
+            for (var i = 0; i < f.length; i++) {
+                htmlAssignedTo += '<option value=' + f[i].id + '>' + f[i].name + '</option>';
+            }
+            $("#assignedTo").append(htmlAssignedTo);
+        }, "POST");
     }
     function createWorkItem() {
         $('#createModal').modal('show');
