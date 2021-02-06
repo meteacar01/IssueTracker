@@ -59,8 +59,7 @@
     .column {
         width: 50%;
         float: left;
-        border: solid 2px black;
-        height: 100vh;
+        border: solid 2px black; 
     }
 
     .portlet {
@@ -152,30 +151,39 @@
         <div class="scrumboard row">
 
 
-            <div class="column flex">
+            <div class="column flex" id="open">
                 <!-- todo -->
                 <h1 style="text-align:center;">Open</h1>
                 <hr />
-                <div class="portlet">
-                    <div class="portlet-header">Task</div>
-                    <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
-                </div>
+                    <div class="portlet">
+                        <div class="portlet-header">Task</div>
+                        <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+                    </div>
+                    <div class="portlet">
+                        <div class="portlet-header">Task</div>
+                        <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+                    </div>
+                    <div class="portlet">
+                        <div class="portlet-header">Task</div>
+                        <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+                    </div>
+             
 
-                <div class="portlet">
-                    <div class="portlet-header">Task</div>
-                    <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
-                </div>
+
 
             </div>
 
-            <div class="column flex">
+            <div class="column flex"id="closed">
                 <!-- ongoing -->
                 <h1 style="text-align:center;">Closed</h1>
                 <hr />
-                <div class="portlet">
-                    <div class="portlet-header">Task</div>
-                    <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
-                </div>
+                
+                    <div class="portlet">
+                        <div class="portlet-header">Task</div>
+                        <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+                    </div>
+        
+
 
             </div>
 
@@ -280,7 +288,6 @@
 
 
 
-
 @*<h2>Animated Sidenav Example</h2>
     <p>Click on the element below to open the side navigation menu.</p>*@
 @*<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>*@
@@ -333,26 +340,26 @@
             type: type,
             async: false, // js ajax Generic islemler icin
             url: url,
-            data: JSON.stringify(model),
+            data: model,
             dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
+            contentType: 'application/x-www-form-urlencoded;',
             success: func,
             error: function (xhr, errorType, exception) {
-                if (xhr.responseText != undefined) {
-                    var rText = $('<div/>').html(xhr.responseText.split("</title>")[0]).text();
-                    var rTextSplit = rText.split("##");
-                    if (xhr.statusText == "warning" || xhr.statusText == "info" || xhr.statusText == "success" || xhr.statusText == "error")
-                        toastr.error(rTextSplit[0], rTextSplit[1], true);
-                    else {
-                        toastr.error(rText, "Hata Mesajı", true);
-                        if (rText.indexOf("Login Giriş Ekranı") != -1)
-                            window.location = "/Login/Index";
-                    }
-                }
-                else {
-                    toastr.error(exception, "Hata Mesajı", true);
-                }
+                //if (xhr.responseText != undefined) {
+                //    var rText = $('<div/>').html(xhr.responseText.split("</title>")[0]).text();
+                //    var rTextSplit = rText.split("##");
+                //    if (xhr.statusText == "warning" || xhr.statusText == "info" || xhr.statusText == "success" || xhr.statusText == "error")
 
+                //    else {
+                //        toastr.error(rText, "Hata Mesajı", true);
+                //        if (rText.indexOf("Login Giriş Ekranı") != -1)
+                //            window.location = "/Login/Index";
+                //    }
+                //}
+                //else {
+                //    toastr.error(exception, "Hata Mesajı", true);
+                //}
+                alert(exception);
             }
         });
     }
@@ -361,24 +368,41 @@
     function getWorkItemsByIteration(e) {
         var iterationId = parseInt(e.id);
         funcAjaxRequest("", "/WorkItems/GetWorkItemsByIteration?iterationId=" + iterationId + "", function (f) {
-            var html = "";
+            var htmlOpen = ' <h1 style="text-align:center;">Open</h1>'+
+                           ' <hr/> ';
+            var htmlClosed = ' <h1 style="text-align:center;">Closed</h1>' +
+                             ' <hr/> ';
             for (var i = 0; i < f.length; i++) {
-                html += '<a onclick="getWorkItems()" href="javascript:void(0)">' + f[i].name + '</a>';
+                if (f[i].workItemStateId == 1) {
+                    htmlOpen += '<div class="portlet">' +
+                        '<div class="portlet-header" > ' + f[i].title + '</div > ' +
+                        '<div class="portlet-content" > ' + f[i].content + '</div > ' +
+                        '</div >';
+                }
+                else {
+                    htmlClosed += '<div class="portlet">' +
+                        '<div class="portlet-header" > ' + f[i].title + '</div > ' +
+                        '<div class="portlet-content" > ' + f[i].content + '</div > ' +
+                        '</div >';
+                }
+
             }
-            $("#iteration").html(html);
+            $("#open").html(htmlOpen);
+            $("#closed").html(htmlClosed);
         }, "GET");
     }
 
 
     function createModal() {
         $('#createModal').modal('show');
-         
+        $("#title").val("");
+        $("#content").val("");
         funcAjaxRequest("", "/Iterations/GetAllIteration", function (f) {
             var htmlIteration = "";
             for (var i = 0; i < f.length; i++) {
                 htmlIteration += '<option value=' + f[i].id + '>' + f[i].name + '</option>';
             }
-            $("#iteration").append(htmlIteration);
+            $("#iteration").html(htmlIteration);
         }, "POST");
 
         funcAjaxRequest("", "/WorkItemStates/GetAllWorkItemState", function (f) {
@@ -386,7 +410,7 @@
             for (var i = 0; i < f.length; i++) {
                 htmlWorkItemStates += '<option value=' + f[i].id + '>' + f[i].name + '</option>';
             }
-            $("#workItemState").append(htmlWorkItemStates);
+            $("#workItemState").html(htmlWorkItemStates);
         }, "POST");
 
         funcAjaxRequest("", "/WorkItemTypes/GetAllWorkItemType", function (f) {
@@ -394,7 +418,7 @@
             for (var i = 0; i < f.length; i++) {
                 htmlWorkItemTypes += '<option value=' + f[i].id + '>' + f[i].name + '</option>';
             }
-            $("#workItemType").append(htmlWorkItemTypes);
+            $("#workItemType").html(htmlWorkItemTypes);
         }, "POST");
 
         funcAjaxRequest("", "/Users/GetAllUser", function (f) {
@@ -402,11 +426,30 @@
             for (var i = 0; i < f.length; i++) {
                 htmlAssignedTo += '<option value=' + f[i].id + '>' + f[i].name + '</option>';
             }
-            $("#assignedTo").append(htmlAssignedTo);
+            $("#assignedTo").html(htmlAssignedTo);
         }, "POST");
     }
     function createWorkItem() {
-        $('#createModal').modal('show');
+        var title = $("#title").val();
+        var content = $("#content").val();
+        var workItemType = $("#workItemType").val();
+        var iteration = $("#iteration").val();
+        var assignedTo = $("#assignedTo").val();
+        var workItemState = $("#workItemState").val();
+        var model = { Title: title, Content: content, WorkItemTypeId: workItemType, IterationId: iteration, AssignedTo: assignedTo, WorkItemStateId: workItemState };
+
+        funcAjaxRequest(model, "/WorkItems/Create", function (f) {
+            if (f) {
+                alert("Kayıt başarıyla eklendi");
+                $('#createModal').modal('hide');
+            }
+            else
+                alert("Hay Aksi!!! Bir Hata oluştu.")
+
+        }, "POST");
+
+
+
     }
 </script>
 

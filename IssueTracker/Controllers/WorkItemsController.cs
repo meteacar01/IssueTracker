@@ -1,4 +1,5 @@
 ﻿using IssueTracker.DbAccessContext;
+using IssueTracker.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -35,18 +36,20 @@ namespace IssueTracker.Controllers
         }
 
         // POST: WorkItemsController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        [HttpPost] 
+        public ActionResult Create(WorkItem model)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                model.CreatedAt = DateTime.Now;
+                _context.WorkItem.Add(model);
+                _context.SaveChanges();
+                return Json(true);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
-            }
+                return Json(ex.Message);
+            } 
         }
 
         // GET: WorkItemsController/Edit/5
@@ -96,6 +99,6 @@ namespace IssueTracker.Controllers
         {
             var result = _context.WorkItem.Where(w => w.IterationId == iterationId).ToList();
             return Json(result);
-        }
+        }  
     }
 }
