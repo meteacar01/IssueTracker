@@ -26,8 +26,7 @@ namespace IssueTracker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<PostgreContext>(options => options.UseNpgsql(Configuration.GetConnectionString("CnnString")));
-            services.AddMvc().AddRazorRuntimeCompilation();
+            services.AddDbContext<PostgreContext>(options => options.UseNpgsql(Configuration.GetConnectionString("CnnString"))); 
              
         }
 
